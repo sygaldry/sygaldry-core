@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/bricerising/devops-sdk/issues"
   },
-  "homepage": "https://github.com/bricerising/devops-sdk#readme"
+  "homepage": "https://github.com/bricerising/devops-sdk#readme",
+  "devDependencies": {
+    "typescript": "^3.3.3333"
+  }
 }
