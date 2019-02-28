@@ -4,7 +4,7 @@
   "description": "SDK for developing DevOps products like cicd pipelines and infrastructure as code.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"No tests\""
+    "test": "mocha -r ts-node/register \"**/{,!(node_modules)/**/}*.spec.ts\""
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,16 @@
   },
   "homepage": "https://github.com/bricerising/devops-sdk#readme",
   "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6",
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2",
+    "ts-node": "^8.0.2",
     "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "@types/node": "^11.9.5",
+    "@types/npm": "^2.0.30",
+    "child_process": "^1.0.2"
   }
 }
