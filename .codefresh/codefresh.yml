@@ -1,0 +1,9 @@
+version: '1.0'
+steps:
+  test:
+    image: node:10-jessie
+    working_directory: ${{main_clone}}
+    description: Test sygaldry-core
+    commands:
+      - npm install
+      - npm test
