@@ -1,21 +1,21 @@
 {
-  "name": "devops-sdk",
+  "name": "sygaldry-core",
   "version": "0.0.0",
-  "description": "SDK for developing DevOps products like cicd pipelines and infrastructure as code.",
+  "description": "This project contains all of the base runes necessary to perform sygaldry.",
   "main": "index.js",
   "scripts": {
     "test": "mocha -r ts-node/register \"**/{,!(node_modules)/**/}*.spec.ts\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bricerising/devops-sdk.git"
+    "url": "git+https://github.com/sygaldry/sygaldry-core.git"
   },
   "author": "Brice Rising",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bricerising/devops-sdk/issues"
+    "url": "https://github.com/sygaldry/sygaldry-core/issues"
   },
-  "homepage": "https://github.com/bricerising/devops-sdk#readme",
+  "homepage": "https://github.com/sygaldry/sygaldry-core#readme",
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
