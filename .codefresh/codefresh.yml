@@ -1,9 +1,27 @@
 version: '1.0'
+
+stages:
+- test
+- publish
+
 steps:
-  test:
+
+  unitTest:
+    title: Running Unit tests
+    stage: test
     image: node:10-jessie
-    working_directory: ${{main_clone}}
-    description: Test sygaldry-core
     commands:
-      - npm install
-      - npm test
+    - npm install
+    - npm test
+
+  publish:
+    title: Publish sygaldry-core
+    stage: publish
+    image: node:10-jessie
+    when:
+      branch:
+        only:
+        - master
+    commands:
+    - scripts/npm-login.sh ${NPM_TOKEN}
+    - npm publish
