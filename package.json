@@ -1,6 +1,6 @@
 {
   "name": "sygaldry-core",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "This project contains all of the base runes necessary to perform sygaldry.",
   "main": "index.js",
   "scripts": {
