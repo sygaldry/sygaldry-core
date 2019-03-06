@@ -1,8 +1,8 @@
 {
   "name": "sygaldry-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This project contains all of the base runes necessary to perform sygaldry.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "mocha -r ts-node/register \"**/{,!(node_modules)/**/}*.spec.ts\""
   },
