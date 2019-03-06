@@ -1,6 +1,6 @@
 
 // Inversify types
-import { TYPES } from './types';
+import TYPES from "./types";
 
 // Clients
 import { NpmClient } from './clients/npm_client';
