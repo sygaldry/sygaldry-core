@@ -1,12 +1,17 @@
 'use strict';
 
-import { ArtifactRepoClient } from './interfaces/publisher_client';
-import * as child from 'child_process';
-import { BuildToolClient } from './interfaces/builder_client';
+import { injectable } from "inversify";
+import "reflect-metadata";
+import TYPES from "../types";
+
+import { PublisherClient } from './interfaces/publisher_client';
+import { BuilderClient } from './interfaces/builder_client';
+import { sync } from 'cross-spawn';
 
 export interface NpmClientConfig { }
 
-export class NpmClient implements ArtifactRepoClient, BuildToolClient {
+@injectable()
+export class NpmClient implements PublisherClient, BuilderClient {
 
   npmClientConfig: NpmClientConfig;
 
@@ -14,16 +19,22 @@ export class NpmClient implements ArtifactRepoClient, BuildToolClient {
     this.npmClientConfig = npmClientConfig;
   }
 
-  public install(args: string[], cwd: string) {
-    return child.spawnSync('npm', [ 'install', ...args ], {
+  private commandSync(command: string, args: string[], cwd: string): any {
+    return sync('npm', [ command, ...args ], {
       cwd: cwd,
     });
   }
 
-  public test(args: string[], cwd: string) {
-    return child.spawnSync('npm', [ 'test', ...args ], {
-      cwd: cwd,
-    });
+  public install(args: string[], cwd: string): any {
+    return this.commandSync('install', args, cwd);
+  }
+
+  public test(args: string[], cwd: string): any {
+    return this.commandSync('test', args, cwd);
+  }
+
+  public push(args: string[], cwd: string): any {
+    return this.commandSync('publish', args, cwd);
   }
 
 }

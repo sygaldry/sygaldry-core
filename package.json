@@ -18,15 +18,19 @@
   "homepage": "https://github.com/sygaldry/sygaldry-core#readme",
   "devDependencies": {
     "@types/chai": "^4.1.7",
+    "@types/cross-spawn": "^6.0.0",
     "@types/mocha": "^5.2.6",
+    "@types/node": "^11.9.5",
+    "@types/npm": "^2.0.30",
     "chai": "^4.2.0",
     "mocha": "^6.0.2",
     "ts-node": "^8.0.2",
     "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "@types/node": "^11.9.5",
-    "@types/npm": "^2.0.30",
-    "child_process": "^1.0.2"
+    "child_process": "^1.0.2",
+    "cross-spawn": "^6.0.5",
+    "inversify": "^5.0.1",
+    "reflect-metadata": "^0.1.13"
   }
 }
