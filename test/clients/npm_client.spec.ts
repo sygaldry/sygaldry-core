@@ -1,6 +1,7 @@
 
 import { NpmClient } from '../../src/clients/npm_client';
 import { expect } from 'chai';
+import { describe, it } from 'mocha';
 
 describe('NpmClient', () => {
 
