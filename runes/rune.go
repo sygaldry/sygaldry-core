@@ -28,34 +28,34 @@ func NewRune(image string, env []string) Rune {
 
 // Run executes Rune
 func (r *Rune) Run() error {
-	ctx := context.Background()
+	contextBackground := context.Background()
 
-	cli, err := client.NewEnvClient()
+	dockerClient, err := client.NewEnvClient()
 	if err != nil {
 		return err
 	}
 
-	_, err = cli.ImagePull(ctx, r.Image, types.ImagePullOptions{})
+	_, err = dockerClient.ImagePull(contextBackground, r.Image, types.ImagePullOptions{})
 	if err != nil {
 		return err
 	}
 
-	resp, err := cli.ContainerCreate(ctx, &container.Config{
+	container, err := dockerClient.ContainerCreate(contextBackground, &container.Config{
 		Image: r.Image,
 		Tty:   r.Tty,
 		Env:   r.Env,
 	}, nil, nil, "")
 
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
+	if err := dockerClient.ContainerStart(contextBackground, container.ID, types.ContainerStartOptions{}); err != nil {
+		return err
 	}
 
-	_, err = cli.ContainerWait(ctx, resp.ID)
+	_, err = dockerClient.ContainerWait(contextBackground, container.ID)
 	if err != nil {
 		return err
 	}
 
-	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{
+	containerLogsReader, err := dockerClient.ContainerLogs(contextBackground, container.ID, types.ContainerLogsOptions{
 		ShowStdout: true,
 		Follow:     true,
 	})
@@ -63,7 +63,7 @@ func (r *Rune) Run() error {
 		return err
 	}
 
-	io.Copy(os.Stdout, out)
+	io.Copy(os.Stdout, containerLogsReader)
 
 	return nil
 }
