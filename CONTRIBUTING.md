@@ -1,4 +1,4 @@
-# Contributing to Sygaldry
+# Contributing to Sygaldry Core
 
 Please see our main [Contribution Document][main-doc-link]
 
