@@ -7,23 +7,37 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 )
 
 // Rune contains configs for executing a Rune
 type Rune struct {
-	Image string
-	Tty   bool
-	Env   []string
+	Image   string
+	Tty     bool
+	Env     []string
+	VolumeMounts []mount.Mount
 }
 
 // NewRune creates a new Rune
-func NewRune(image string, env []string) Rune {
-	return Rune{
-		Image: image,
-		Env:   env,
-		Tty:   true,
+func NewRune(image string, env []string, volumes []mount.Mount) (Rune, error) {
+	workingDir, err := os.Getwd()
+
+	if err != nil {
+		 return Rune{}, err
 	}
+	volumes = append(volumes, mount.Mount{
+		Type:   mount.TypeBind,
+		Source: workingDir,
+		Target: "/home/sygaldry/project",
+	})
+
+	return Rune{
+		Image:   image,
+		Env:     env,
+		Tty:     true,
+		VolumeMounts: volumes,
+	}, nil
 }
 
 // Run executes Rune
@@ -40,11 +54,19 @@ func (r *Rune) Run() error {
 		return err
 	}
 
-	container, err := dockerClient.ContainerCreate(contextBackground, &container.Config{
-		Image: r.Image,
-		Tty:   r.Tty,
-		Env:   r.Env,
-	}, nil, nil, "")
+	container, err := dockerClient.ContainerCreate(
+		contextBackground,
+		&container.Config{
+			Image: r.Image,
+			Tty:   r.Tty,
+			Env:   r.Env,
+		},
+		&container.HostConfig{
+			Mounts: r.VolumeMounts,
+		},
+		nil,
+		"",
+	)
 
 	if err := dockerClient.ContainerStart(contextBackground, container.ID, types.ContainerStartOptions{}); err != nil {
 		return err
