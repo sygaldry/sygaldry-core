@@ -2,8 +2,10 @@ package runes
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -60,12 +62,14 @@ func (r *Rune) Run() error {
 			Image: r.Image,
 			Tty:   r.Tty,
 			Env:   r.Env,
+			AttachStdout: true,
+			AttachStderr: true,
 		},
 		&container.HostConfig{
 			Mounts: r.VolumeMounts,
 		},
 		nil,
-		"",
+		fmt.Sprintf("sygaldry-%s", time.Now().String()),
 	)
 
 	if err := dockerClient.ContainerStart(contextBackground, container.ID, types.ContainerStartOptions{}); err != nil {
@@ -79,6 +83,7 @@ func (r *Rune) Run() error {
 
 	containerLogsReader, err := dockerClient.ContainerLogs(contextBackground, container.ID, types.ContainerLogsOptions{
 		ShowStdout: true,
+		ShowStderr: true,
 		Follow:     true,
 	})
 	if err != nil {
