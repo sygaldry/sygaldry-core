@@ -1,7 +1,6 @@
 package runes_test
 
 import (
-	"github.com/docker/docker/api/types/mount"
 	"testing"
 
 	"github.com/sygaldry/sygaldry-core/runes"
@@ -9,7 +8,7 @@ import (
 
 // TestRuneRun tests rune.Run
 func TestRuneRun(t *testing.T) {
-	myFirstRune, error := runes.NewRune("docker.io/library/hello-world", []string{"TEST=test"}, []mount.Mount{})
+	myFirstRune, error := runes.NewRune("docker.io/library/hello-world", []string{"TEST=test"}, []string{})
 	if error != nil {
 		t.Error("Expected to create a Rune, got", error)
 	}

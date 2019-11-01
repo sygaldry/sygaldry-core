@@ -1,16 +1,13 @@
 package runes
 
 import (
+	"bufio"
 	"context"
 	"fmt"
-	"io"
 	"os"
+	"os/exec"
+	"strings"
 	"time"
-
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/mount"
-	"github.com/docker/docker/client"
 )
 
 // Rune contains configs for executing a Rune
@@ -18,27 +15,30 @@ type Rune struct {
 	Image   string
 	Tty     bool
 	Env     []string
-	VolumeMounts []mount.Mount
+	Volumes []string
 }
 
 // NewRune creates a new Rune
-func NewRune(image string, env []string, volumes []mount.Mount) (Rune, error) {
+func NewRune(image string, env []string, volumes []string) (Rune, error) {
 	workingDir, err := os.Getwd()
 
 	if err != nil {
-		 return Rune{}, err
+		return Rune{}, err
 	}
-	volumes = append(volumes, mount.Mount{
-		Type:   mount.TypeBind,
-		Source: workingDir,
-		Target: "/home/sygaldry/project",
-	})
+	volumes = append(
+		volumes,
+		fmt.Sprintf(
+			"%s:%s",
+			workingDir,
+			"/home/sygaldry/project",
+		),
+	)
 
 	return Rune{
 		Image:   image,
 		Env:     env,
 		Tty:     true,
-		VolumeMounts: volumes,
+		Volumes: volumes,
 	}, nil
 }
 
@@ -46,51 +46,46 @@ func NewRune(image string, env []string, volumes []mount.Mount) (Rune, error) {
 func (r *Rune) Run() error {
 	contextBackground := context.Background()
 
-	dockerClient, err := client.NewEnvClient()
-	if err != nil {
-		return err
+	dockerRunCommand := exec.CommandContext(contextBackground, "/bin/sh", "-c", dockerRunStringBuilder(r))
+	dockerRunCommandOut, _ := dockerRunCommand.StdoutPipe()
+	dockerRunCommandErr, _ := dockerRunCommand.StderrPipe()
+	dockerRunCommandOutScanner := bufio.NewScanner(dockerRunCommandOut)
+	dockerRunCommandErrScanner := bufio.NewScanner(dockerRunCommandErr)
+	fmt.Println(dockerRunStringBuilder(r))
+	go func() {
+		for dockerRunCommandOutScanner.Scan() {
+			fmt.Printf("docker run | %s\n", dockerRunCommandOutScanner.Text())
+		}
+		for dockerRunCommandErrScanner.Scan() {
+			fmt.Printf("docker run | %s\n", dockerRunCommandErrScanner.Text())
+		}
+	}()
+	runError := dockerRunCommand.Run()
+	if runError != nil {
+		return runError
 	}
-
-	_, err = dockerClient.ImagePull(contextBackground, r.Image, types.ImagePullOptions{})
-	if err != nil {
-		return err
-	}
-
-	container, err := dockerClient.ContainerCreate(
-		contextBackground,
-		&container.Config{
-			Image: r.Image,
-			Tty:   r.Tty,
-			Env:   r.Env,
-			AttachStdout: true,
-			AttachStderr: true,
-		},
-		&container.HostConfig{
-			Mounts: r.VolumeMounts,
-		},
-		nil,
-		fmt.Sprintf("sygaldry-%s", time.Now().String()),
-	)
-
-	if err := dockerClient.ContainerStart(contextBackground, container.ID, types.ContainerStartOptions{}); err != nil {
-		return err
-	}
-
-	_, err = dockerClient.ContainerWait(contextBackground, container.ID)
-	if err != nil {
-		return err
-	}
-
-	containerLogsReader, err := dockerClient.ContainerLogs(contextBackground, container.ID, types.ContainerLogsOptions{
-		ShowStdout: true,
-		ShowStderr: true,
-		Follow:     true,
-	})
-	if err != nil {
-		return err
-	}
-
-	io.Copy(os.Stdout, containerLogsReader)
 
 	return nil
+}
+
+func dockerRunStringBuilder(rune *Rune) string {
+	var stringBuilder strings.Builder
+	containerName := fmt.Sprintf("sygaldry-%d", time.Now().UnixNano())
+	stringBuilder.WriteString(
+		fmt.Sprintf("docker run -i --name %s ", containerName),
+	)
+
+	for _, volume := range rune.Volumes {
+		stringBuilder.WriteString(
+			fmt.Sprintf("-v %s ", volume),
+		)
+	}
+
+	stringBuilder.WriteString(
+		fmt.Sprintf("--env %s ", strings.Join(rune.Env, " --env ")),
+	)
+
+	stringBuilder.WriteString(rune.Image)
+
+	return stringBuilder.String()
 }
