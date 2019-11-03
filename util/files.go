@@ -1,8 +1,8 @@
 package util
 
 import (
+	"bytes"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -15,29 +15,22 @@ import (
 // ReadFileFromPathOrURL read file from either os filesystem
 // or from a URL
 func ReadFileFromPathOrURL(source string) ([]byte, error) {
-	workingDir, getWorkingDirErr := getWorkingDir()
-	if getWorkingDirErr != nil {
-		return nil, getWorkingDirErr
-	}
-
-	var runesYamlPath string
 
 	if fileExists(source) {
 		sourceAbsPath, absPathErr := filepath.Abs(source)
 		if absPathErr != nil {
 			return nil, absPathErr
 		}
-		runesYamlPath = sourceAbsPath
+		return ioutil.ReadFile(sourceAbsPath)
 	} else if validURL(source) {
-		runesYamlPath = fmt.Sprintf("%s/runes.yaml", workingDir)
-		if downloadFileErr := downloadFile(runesYamlPath, source); downloadFileErr != nil {
+		fileBody, downloadFileErr := downloadFile(source)
+		if downloadFileErr != nil {
 			return nil, downloadFileErr
 		}
-	} else {
-		return nil, errors.New("Could not find runes.yaml file")
+		return fileBody, nil
 	}
 
-	return ioutil.ReadFile(runesYamlPath)
+	return nil, errors.New("Could not find runes.yaml file")
 }
 
 func getWorkingDir() (string, error) {
@@ -60,20 +53,16 @@ func fileExists(source string) bool {
 	return !fileInfo.IsDir()
 }
 
-func downloadFile(filepath string, url string) error {
-
-	file, osErr := os.Create(filepath)
-	if osErr != nil {
-		return osErr
-	}
-	defer file.Close()
-
+func downloadFile(url string) ([]byte, error) {
 	httpResp, httpErr := http.Get(url)
 	if httpErr != nil {
-		return httpErr
+		return nil, httpErr
 	}
-	defer httpResp.Body.Close()
 
-	_, copyErr := io.Copy(file, httpResp.Body)
-	return copyErr
+	var data bytes.Buffer
+	_, copyErr := io.Copy(&data, httpResp.Body)
+	if copyErr != nil {
+		return nil, copyErr
+	}
+	return data.Bytes(), nil
 }

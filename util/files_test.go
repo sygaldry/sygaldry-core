@@ -1,7 +1,6 @@
 package util
 
 import (
-	"os"
 	"testing"
 )
 
@@ -30,14 +29,12 @@ func TestValidURL(t *testing.T) {
 
 func TestDownloadFile(t *testing.T) {
 	downloadURL := "https://golang.org/lib/godoc/images/footer-gopher.jpg"
-	gopherFilePath := "./gopher-test.jpg"
-	downloadError := downloadFile(gopherFilePath, downloadURL)
+	imageBody, downloadError := downloadFile(downloadURL)
 	if downloadError != nil {
 		t.Error("Tried to download gopher from URL, but got ", downloadError)
 	}
-	_, gopherFileErr := os.Stat(gopherFilePath)
-	if gopherFileErr != nil {
-		t.Error("Tried to find gopher picture, but got", gopherFileErr)
+	if len(imageBody) == 0 {
+		t.Error("Tried to download image, but got this many bytes", len(imageBody))
 	}
 }
 
