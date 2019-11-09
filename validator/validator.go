@@ -145,7 +145,7 @@ func validateRuneConfigParams(runeConfigParams []string, runeDefinition *simpley
 	if getStringErr != nil {
 		errors.New("could not convert rune definition params to list of strings")
 	}
-	return util.ListContainsListStrings(runeDefinitionParamsList, runeConfigParams), nil
+	return util.ListContainsListStrings(runeConfigParams, runeDefinitionParamsList), nil
 }
 
 func getRunesConfigsForStage(runeYaml *simpleyaml.Yaml, stage string) (*simpleyaml.Yaml, error) {
