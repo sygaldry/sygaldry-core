@@ -4,7 +4,6 @@ stages:
     mavenHome: ~/.m2
     stages: clean install
     version: 3.5.0-jdk-8-slim
-    opts:
   - definition: DockerRune
     version: latest
     command: build
