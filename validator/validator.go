@@ -40,7 +40,7 @@ func GetValidStage(source string, stage string) ([]runes.Rune, error) {
 	for index := 0; index < runeConfigsLen; index++ {
 		runeConfig := runeConfigs.GetIndex(index)
 		if runeConfig != nil {
-			if valid, _ := validateRuneConfig(runeConfig, runeDefinitions); !valid {
+			if valid, _ := validateRuneConfig(runeConfig, runeDefinitions); valid {
 				validRune, buildValidRuneErr := buildValidRune(runeConfig, runeDefinitions)
 				if buildValidRuneErr != nil {
 					return nil, errors.New("Could not build rune")
