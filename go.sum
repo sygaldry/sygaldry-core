@@ -1,0 +1,7 @@
+github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a h1:idn718Q4B6AGu/h5Sxe66HYVdqdGu2l9Iebqhi/AEoA=
+github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a/go.mod h1:lB+ZfQJz7igIIfQNfa7Ml4HSf2uFQQRzpGGRXenZAgY=
+github.com/smallfish/simpleyaml v0.0.0-20170911015856-a32031077861 h1:9z0Ip656Pc+3cj/BpHkErOVg4iE0xcAdvJwfA3hMVzU=
+github.com/smallfish/simpleyaml v0.0.0-20170911015856-a32031077861/go.mod h1:eGZ1jp5PTJ+XVhTErUmw0xyPbgctPFlixWPypUrDkSs=
+gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/yaml.v2 v2.2.4 h1:/eiJrUcujPVeJ3xlSWaiNi3uSVmDGBK1pDHUHAnao1I=
+gopkg.in/yaml.v2 v2.2.4/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
