@@ -51,7 +51,6 @@ func (r *Rune) Run() error {
 	dockerRunCommandErr, _ := dockerRunCommand.StderrPipe()
 	dockerRunCommandOutScanner := bufio.NewScanner(dockerRunCommandOut)
 	dockerRunCommandErrScanner := bufio.NewScanner(dockerRunCommandErr)
-	fmt.Println(dockerRunStringBuilder(r))
 	go func() {
 		for dockerRunCommandOutScanner.Scan() {
 			fmt.Printf("%s\n", dockerRunCommandOutScanner.Text())
