@@ -1,0 +1,23 @@
+stages:
+  build:
+  - definition: MavenRune
+    mavenHome: ~/.m2
+    stages: clean install
+    version: 3.5.0-jdk-8-slim
+  - definition: DockerRune
+    version: latest
+    command: build
+    args:
+    - -t docker.io/sygaldry-demos/springboot:latest
+  - definition: DockerRune
+    version: latest
+    command: push
+    args:
+    - docker.io/sygaldry-demos/springboot:latest
+  deploy:
+  - definition: TerraformRune
+    terraformFolder: infrastructure
+    tfvars:
+    - infrastructure/dev.tfvars
+definitions:
+- "https://raw.githubusercontent.com/sygaldry/sygaldry-runes/feature/writeRuneDefsFile/rune-definitions.yaml"
