@@ -94,18 +94,16 @@ func buildValidRune(runeConfig *simpleyaml.Yaml, runeDefinitions *simpleyaml.Yam
 	runeDefinitionEnvTemplates, getEnvTemplateErr := util.ConvertYamlListToStringList(runeDefinition.Get("values").Get("Env"))
 	if getEnvTemplateErr != nil {
 		fmt.Printf(
-			"WARNING: Could not read Env values of %s rune definition (this may be expected)\n%v",
+			"WARNING: Could not read Env values of %s rune definition (this may be expected)\n",
 			runeConfigDefinitionName,
-			getEnvTemplateErr,
 		)
 		runeDefinitionEnvTemplates = []string{}
 	}
 	runeDefinitionVolumesTemplates, getVolumesTemplateErr := util.ConvertYamlListToStringList(runeDefinition.Get("values").Get("Volumes"))
 	if getVolumesTemplateErr != nil {
 		fmt.Printf(
-			"WARNING: Could not read Volumes values of %s rune definition (this may be expected)\n%v",
+			"WARNING: Could not read Volumes values of %s rune definition (this may be expected)\n",
 			runeConfigDefinitionName,
-			getVolumesTemplateErr,
 		)
 		runeDefinitionVolumesTemplates = []string{}
 	}
