@@ -16,12 +16,15 @@ type Stage struct {
 // of runes a user needs for a targeted stage
 func GetStage(source string, stage string) (Stage, error) {
 	stageRunes, getValidStageErr := validator.GetValidStage(source, stage)
-	return NewStage(stageRunes), fmt.Errorf(
-		"Could not validate stage %s in runes yaml at %s\n%v",
-		stage,
-		source,
-		getValidStageErr,
-	)
+	if getValidStageErr != nil {
+		return Stage{}, fmt.Errorf(
+			"Could not validate stage %s in runes yaml at %s\n%s",
+			stage,
+			source,
+			getValidStageErr,
+		)
+	}
+	return NewStage(stageRunes), nil
 }
 
 // NewStage creates a new stage object
