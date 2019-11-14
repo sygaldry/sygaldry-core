@@ -24,7 +24,7 @@ func NewRune(image string, env []string, volumes []string) (Rune, error) {
 
 	if getWdErr != nil {
 		return Rune{}, fmt.Errorf(
-			"Could not determine current working directory\n%v",
+			"Could not determine current working directory\n%s",
 			getWdErr,
 		)
 	}
@@ -65,7 +65,7 @@ func (r *Rune) Run() error {
 	runError := dockerRunCommand.Run()
 	if runError != nil {
 		return fmt.Errorf(
-			"Could not complete execution of rune\n%v",
+			"Could not complete execution of rune\n%s",
 			runError,
 		)
 	}

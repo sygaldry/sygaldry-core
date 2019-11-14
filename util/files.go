@@ -26,7 +26,7 @@ func ReadFileFromPathOrURL(source string) ([]byte, error) {
 		fileBody, downloadFileErr := downloadFile(source)
 		if downloadFileErr != nil {
 			return nil, fmt.Errorf(
-				"Could not download yaml file at %s\n%v",
+				"Could not download yaml file at %s\n%s",
 				source,
 				downloadFileErr,
 			)
@@ -44,7 +44,7 @@ func getWorkingDir() (string, error) {
 	ex, err := os.Executable()
 	if err != nil {
 		return "", fmt.Errorf(
-			"Could not determine current working directory\n%v",
+			"Could not determine current working directory\n%s",
 			err,
 		)
 	}
@@ -67,7 +67,7 @@ func downloadFile(url string) ([]byte, error) {
 	httpResp, httpErr := http.Get(url)
 	if httpErr != nil {
 		return nil, fmt.Errorf(
-			"Could not GET url %s\n%v",
+			"Could not GET url %s\n%s",
 			url,
 			httpErr,
 		)
@@ -77,7 +77,7 @@ func downloadFile(url string) ([]byte, error) {
 	_, copyErr := io.Copy(&data, httpResp.Body)
 	if copyErr != nil {
 		return nil, fmt.Errorf(
-			"Could not copy GET response from %s to buffer\n%v",
+			"Could not copy GET response from %s to buffer\n%s",
 			url,
 			copyErr,
 		)

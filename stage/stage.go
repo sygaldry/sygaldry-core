@@ -17,7 +17,7 @@ type Stage struct {
 func GetStage(source string, stage string) (Stage, error) {
 	stageRunes, getValidStageErr := validator.GetValidStage(source, stage)
 	return NewStage(stageRunes), fmt.Errorf(
-		"Could not validate stage %s in runes yaml at %s\n%v",
+		"Could not validate stage %s in runes yaml at %s\n%s",
 		stage,
 		source,
 		getValidStageErr,
@@ -37,7 +37,7 @@ func (stage *Stage) Run() error {
 		stageRuneRunErr := stageRune.Run()
 		if stageRuneRunErr != nil {
 			return fmt.Errorf(
-				"Could not complete Stage execution\n%v",
+				"Could not complete Stage execution\n%s",
 				stageRuneRunErr,
 			)
 		}

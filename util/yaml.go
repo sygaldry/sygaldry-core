@@ -11,7 +11,7 @@ func ConvertYamlListToStringList(yamlList *simpleyaml.Yaml) ([]string, error) {
 	yamlListArr, getArrayErr := yamlList.Array()
 	if getArrayErr != nil {
 		return nil, fmt.Errorf(
-			"Could not build array from yaml list\n%v",
+			"Could not build array from yaml list\n%s",
 			getArrayErr,
 		)
 	}

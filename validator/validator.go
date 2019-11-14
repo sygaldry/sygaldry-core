@@ -18,21 +18,21 @@ import (
 func GetValidStage(source string, stage string) ([]runes.Rune, error) {
 	runeYaml, newYamlErr := yamlSource(source)
 	if newYamlErr != nil {
-		return nil, fmt.Errorf("Could not parse runes yaml at: %s\n%v", source, newYamlErr)
+		return nil, fmt.Errorf("Could not parse runes yaml at: %s\n%s", source, newYamlErr)
 	}
 
 	runeDefinitions, getRuneDefinitionsErr := getRuneDefinitions(runeYaml)
 	if getRuneDefinitionsErr != nil {
-		return nil, fmt.Errorf("Could not read rune definitions in runes yaml at: %s\n%v", source, getRuneDefinitionsErr)
+		return nil, fmt.Errorf("Could not read rune definitions in runes yaml at: %s\n%s", source, getRuneDefinitionsErr)
 	}
 	runeConfigs, getRuneConfigsErr := getRunesConfigsForStage(runeYaml, stage)
 	if getRuneConfigsErr != nil {
-		return nil, fmt.Errorf("Could not read rune configs for stage %s in runes yaml at %s\n%v", stage, source, getRuneConfigsErr)
+		return nil, fmt.Errorf("Could not read rune configs for stage %s in runes yaml at %s\n%s", stage, source, getRuneConfigsErr)
 	}
 	runeConfigsLen, getRuneConfigsLenErr := runeConfigs.GetArraySize()
 
 	if getRuneConfigsLenErr != nil {
-		return nil, fmt.Errorf("Could not get count of runes for stage %s\n%v", stage, getRuneConfigsLenErr)
+		return nil, fmt.Errorf("Could not get count of runes for stage %s\n%s", stage, getRuneConfigsLenErr)
 	}
 
 	validStageRunes := make([]runes.Rune, runeConfigsLen)
@@ -43,7 +43,7 @@ func GetValidStage(source string, stage string) ([]runes.Rune, error) {
 			runeConfigValid, validateRuneConfigErr := validateRuneConfig(runeConfig, runeDefinitions)
 			if validateRuneConfigErr != nil {
 				return nil, fmt.Errorf(
-					"Could not validate rune config at index %d of stage %s in runes yaml at %s\n%v",
+					"Could not validate rune config at index %d of stage %s in runes yaml at %s\n%s",
 					index,
 					stage,
 					source,
@@ -54,7 +54,7 @@ func GetValidStage(source string, stage string) ([]runes.Rune, error) {
 				validRune, buildValidRuneErr := buildValidRune(runeConfig, runeDefinitions)
 				if buildValidRuneErr != nil {
 					return nil, fmt.Errorf(
-						"Could not build rune at index %d of stage %s in runes yaml at %s\n%v",
+						"Could not build rune at index %d of stage %s in runes yaml at %s\n%s",
 						index,
 						stage,
 						source,
@@ -78,7 +78,7 @@ func GetValidStage(source string, stage string) ([]runes.Rune, error) {
 func buildValidRune(runeConfig *simpleyaml.Yaml, runeDefinitions *simpleyaml.Yaml) (runes.Rune, error) {
 	runeConfigDefinitionName, getStringErr := runeConfig.Get("definition").String()
 	if getStringErr != nil {
-		return runes.Rune{}, fmt.Errorf("Could not parse definition field of rune\n%v", getStringErr)
+		return runes.Rune{}, fmt.Errorf("Could not parse definition field of rune\n%s", getStringErr)
 	}
 
 	runeDefinition := runeDefinitions.Get(runeConfigDefinitionName)
@@ -86,7 +86,7 @@ func buildValidRune(runeConfig *simpleyaml.Yaml, runeDefinitions *simpleyaml.Yam
 	runeDefinitionImageTemplate, getImageTemplateErr := runeDefinition.Get("values").Get("Image").String()
 	if getImageTemplateErr != nil {
 		return runes.Rune{}, fmt.Errorf(
-			"Could not read Image value of %s rune definition\n%v",
+			"Could not read Image value of %s rune definition\n%s",
 			runeConfigDefinitionName,
 			getImageTemplateErr,
 		)
@@ -94,7 +94,7 @@ func buildValidRune(runeConfig *simpleyaml.Yaml, runeDefinitions *simpleyaml.Yam
 	runeDefinitionEnvTemplates, getEnvTemplateErr := util.ConvertYamlListToStringList(runeDefinition.Get("values").Get("Env"))
 	if getEnvTemplateErr != nil {
 		fmt.Printf(
-			"WARNING: Could not read Env values of %s rune definition (this may be expected)\n%v",
+			"WARNING: Could not read Env values of %s rune definition (this may be expected)\n%s",
 			runeConfigDefinitionName,
 			getEnvTemplateErr,
 		)
@@ -103,7 +103,7 @@ func buildValidRune(runeConfig *simpleyaml.Yaml, runeDefinitions *simpleyaml.Yam
 	runeDefinitionVolumesTemplates, getVolumesTemplateErr := util.ConvertYamlListToStringList(runeDefinition.Get("values").Get("Volumes"))
 	if getVolumesTemplateErr != nil {
 		fmt.Printf(
-			"WARNING: Could not read Volumes values of %s rune definition (this may be expected)\n%v",
+			"WARNING: Could not read Volumes values of %s rune definition (this may be expected)\n%s",
 			runeConfigDefinitionName,
 			getEnvTemplateErr,
 		)
@@ -113,7 +113,7 @@ func buildValidRune(runeConfig *simpleyaml.Yaml, runeDefinitions *simpleyaml.Yam
 	runeImage, imageBuildStringForTemplateErr := buildStringsForTemplate(runeDefinitionImageTemplate, runeConfig)
 	if imageBuildStringForTemplateErr != nil {
 		return runes.Rune{}, fmt.Errorf(
-			"Could not evalute template for %s definition from Image value\n%v",
+			"Could not evalute template for %s definition from Image value\n%s",
 			runeConfigDefinitionName,
 			imageBuildStringForTemplateErr,
 		)
@@ -121,7 +121,7 @@ func buildValidRune(runeConfig *simpleyaml.Yaml, runeDefinitions *simpleyaml.Yam
 	runeEnv, envBuildStringsForTemplatesErr := buildStringsForTemplates(runeDefinitionEnvTemplates, runeConfig)
 	if envBuildStringsForTemplatesErr != nil {
 		return runes.Rune{}, fmt.Errorf(
-			"Could not evalute template for %s definition from Env value(s)\n%v",
+			"Could not evalute template for %s definition from Env value(s)\n%s",
 			runeConfigDefinitionName,
 			envBuildStringsForTemplatesErr,
 		)
@@ -129,7 +129,7 @@ func buildValidRune(runeConfig *simpleyaml.Yaml, runeDefinitions *simpleyaml.Yam
 	runeVolumes, volumesBuildStringsForTemplatesErr := buildStringsForTemplates(runeDefinitionVolumesTemplates, runeConfig)
 	if volumesBuildStringsForTemplatesErr != nil {
 		return runes.Rune{}, fmt.Errorf(
-			"Could not evalute template for %s definition from Volumes value(s)\n%v",
+			"Could not evalute template for %s definition from Volumes value(s)\n%s",
 			runeConfigDefinitionName,
 			volumesBuildStringsForTemplatesErr,
 		)
@@ -142,7 +142,7 @@ func buildStringsForTemplate(runeValueTemplate string, runeConfig *simpleyaml.Ya
 	runeConfigMap, getRuneConfigMapErr := runeConfig.Map()
 	if getRuneConfigMapErr != nil {
 		return "", fmt.Errorf(
-			"Could not convert rune config to Map while parsing %s\n%v",
+			"Could not convert rune config to Map while parsing %s\n%s",
 			runeValueTemplate,
 			getRuneConfigMapErr,
 		)
@@ -150,7 +150,7 @@ func buildStringsForTemplate(runeValueTemplate string, runeConfig *simpleyaml.Ya
 	valueTemplate, newValueTemplateErr := template.New("value").Parse(runeValueTemplate)
 	if newValueTemplateErr != nil {
 		return "", fmt.Errorf(
-			"Cound not create go template while parsing %s\n%v",
+			"Cound not create go template while parsing %s\n%s",
 			runeValueTemplate,
 			newValueTemplateErr,
 		)
@@ -164,7 +164,7 @@ func buildStringsForTemplates(runeValueTemplates []string, runeConfig *simpleyam
 	runeConfigMap, getRuneConfigMapErr := runeConfig.Map()
 	if getRuneConfigMapErr != nil {
 		return nil, fmt.Errorf(
-			"Could not convert rune config to Map while parsing %s\n%v",
+			"Could not convert rune config to Map while parsing %s\n%s",
 			strings.Join(runeValueTemplates[:], ", "),
 			getRuneConfigMapErr,
 		)
@@ -176,7 +176,7 @@ func buildStringsForTemplates(runeValueTemplates []string, runeConfig *simpleyam
 		valueTemplate, newTemplateErr := template.New(fmt.Sprintf("value-%d", index)).Parse(runeValueTemplate)
 		if newTemplateErr != nil {
 			return nil, fmt.Errorf(
-				"Cound not create go template while parsing %s\n%v",
+				"Cound not create go template while parsing %s\n%s",
 				runeValueTemplate,
 				newTemplateErr,
 			)
@@ -190,13 +190,13 @@ func buildStringsForTemplates(runeValueTemplates []string, runeConfig *simpleyam
 func validateRuneConfig(runeConfig *simpleyaml.Yaml, runeDefinitions *simpleyaml.Yaml) (bool, error) {
 	runeConfigDefinitionName, getStringErr := runeConfig.Get("definition").String()
 	if getStringErr != nil {
-		return false, fmt.Errorf("Could not parse definition field of rune\n%v", getStringErr)
+		return false, fmt.Errorf("Could not parse definition field of rune\n%s", getStringErr)
 	}
 	runeDefinition := runeDefinitions.Get(runeConfigDefinitionName)
 	runeConfigParams, getMapKeysErr := runeConfig.GetMapKeys()
 	if getMapKeysErr != nil {
 		return false, fmt.Errorf(
-			"Could not read keys for %s rune\n%v",
+			"Could not read keys for %s rune\n%s",
 			runeConfigDefinitionName,
 			getMapKeysErr,
 		)
@@ -210,7 +210,7 @@ func validateRuneConfigParams(runeConfigParams []string, runeDefinition *simpley
 	runeDefinitionParamsList, getStringErr := util.ConvertYamlListToStringList(runeDefinitionParams)
 	if getStringErr != nil {
 		return false, fmt.Errorf(
-			"Could not convert rune definition params to list of strings\n%v",
+			"Could not convert rune definition params to list of strings\n%s",
 			getStringErr,
 		)
 	}
@@ -222,7 +222,7 @@ func getRunesConfigsForStage(runeYaml *simpleyaml.Yaml, stage string) (*simpleya
 	numRunes, getArraySizeError := stageRunes.GetArraySize()
 	if getArraySizeError != nil {
 		return nil, fmt.Errorf(
-			"Could not find any Runes for stage %s\n%v",
+			"Could not find any Runes for stage %s\n%s",
 			stage,
 			getArraySizeError,
 		)
@@ -241,7 +241,7 @@ func getRuneDefinitions(runeYaml *simpleyaml.Yaml) (*simpleyaml.Yaml, error) {
 	definitionURLsArray, getDefinitionURLsErr := definitionURLs.Array()
 	if getDefinitionURLsErr != nil {
 		return nil, fmt.Errorf(
-			"Could not find rune definitions\n%v",
+			"Could not find rune definitions\n%s",
 			getDefinitionURLsErr,
 		)
 	}
@@ -256,7 +256,7 @@ func getRuneDefinitions(runeYaml *simpleyaml.Yaml) (*simpleyaml.Yaml, error) {
 		definitionYaml, yamlSourceErr := yamlSource(definitionURLString)
 		if yamlSourceErr != nil {
 			return nil, fmt.Errorf(
-				"Could not parse rune definition at: %s\n%v",
+				"Could not parse rune definition at: %s\n%s",
 				definitionURL,
 				yamlSourceErr,
 			)
@@ -264,7 +264,7 @@ func getRuneDefinitions(runeYaml *simpleyaml.Yaml) (*simpleyaml.Yaml, error) {
 		definition, mapErr := definitionYaml.Map()
 		if mapErr != nil {
 			return nil, fmt.Errorf(
-				"Could not build map from rune definition at %s\n%v",
+				"Could not build map from rune definition at %s\n%s",
 				definitionURL,
 				mapErr,
 			)
@@ -277,7 +277,7 @@ func getRuneDefinitions(runeYaml *simpleyaml.Yaml) (*simpleyaml.Yaml, error) {
 	definitionsYamlBytes, marshalErr := yaml.Marshal(definitions)
 	if marshalErr != nil {
 		return nil, fmt.Errorf(
-			"Could not make yaml from collection of rune definitions\n%v",
+			"Could not make yaml from collection of rune definitions\n%s",
 			marshalErr,
 		)
 	}
@@ -289,7 +289,7 @@ func yamlSource(source string) (*simpleyaml.Yaml, error) {
 	fileBody, readFileErr := util.ReadFileFromPathOrURL(source)
 	if readFileErr != nil {
 		return nil, fmt.Errorf(
-			"Could not read yaml at %s\n%v",
+			"Could not read yaml at %s\n%s",
 			source,
 			readFileErr,
 		)
