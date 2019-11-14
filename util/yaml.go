@@ -1,7 +1,6 @@
 package util
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/smallfish/simpleyaml"
@@ -11,7 +10,10 @@ import (
 func ConvertYamlListToStringList(yamlList *simpleyaml.Yaml) ([]string, error) {
 	yamlListArr, getArrayErr := yamlList.Array()
 	if getArrayErr != nil {
-		return nil, errors.New("Could not get Array for yaml list")
+		return nil, fmt.Errorf(
+			"Could not build array from yaml list\n%v",
+			getArrayErr,
+		)
 	}
 	yamlListArrStrings := make([]string, len(yamlListArr))
 	for index, yamlElement := range yamlListArr {
