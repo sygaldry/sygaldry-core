@@ -20,10 +20,13 @@ type Rune struct {
 
 // NewRune creates a new Rune
 func NewRune(image string, env []string, volumes []string) (Rune, error) {
-	workingDir, err := os.Getwd()
+	workingDir, getWdErr := os.Getwd()
 
-	if err != nil {
-		return Rune{}, err
+	if getWdErr != nil {
+		return Rune{}, fmt.Errorf(
+			"Could not determine current working directory\n%v",
+			getWdErr,
+		)
 	}
 	volumes = append(
 		volumes,
@@ -61,7 +64,10 @@ func (r *Rune) Run() error {
 	}()
 	runError := dockerRunCommand.Run()
 	if runError != nil {
-		return runError
+		return fmt.Errorf(
+			"Could not complete execution of rune\n%v",
+			runError,
+		)
 	}
 
 	return nil

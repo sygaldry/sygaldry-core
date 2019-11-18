@@ -2,7 +2,7 @@ package util
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -25,18 +25,28 @@ func ReadFileFromPathOrURL(source string) ([]byte, error) {
 	} else if validURL(source) {
 		fileBody, downloadFileErr := downloadFile(source)
 		if downloadFileErr != nil {
-			return nil, downloadFileErr
+			return nil, fmt.Errorf(
+				"Could not download yaml file at %s\n%v",
+				source,
+				downloadFileErr,
+			)
 		}
 		return fileBody, nil
 	}
 
-	return nil, errors.New("Could not find runes.yaml file")
+	return nil, fmt.Errorf(
+		"Could not find yaml file at %s",
+		source,
+	)
 }
 
 func getWorkingDir() (string, error) {
 	ex, err := os.Executable()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf(
+			"Could not determine current working directory\n%v",
+			err,
+		)
 	}
 	return filepath.Dir(ex), nil
 }
@@ -56,13 +66,21 @@ func fileExists(source string) bool {
 func downloadFile(url string) ([]byte, error) {
 	httpResp, httpErr := http.Get(url)
 	if httpErr != nil {
-		return nil, httpErr
+		return nil, fmt.Errorf(
+			"Could not GET url %s\n%v",
+			url,
+			httpErr,
+		)
 	}
 
 	var data bytes.Buffer
 	_, copyErr := io.Copy(&data, httpResp.Body)
 	if copyErr != nil {
-		return nil, copyErr
+		return nil, fmt.Errorf(
+			"Could not copy GET response from %s to buffer\n%v",
+			url,
+			copyErr,
+		)
 	}
 	return data.Bytes(), nil
 }
