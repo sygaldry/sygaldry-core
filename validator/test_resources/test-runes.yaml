@@ -20,4 +20,4 @@ stages:
     tfvars:
     - infrastructure/dev.tfvars
 definitions:
-- "https://raw.githubusercontent.com/sygaldry/sygaldry-runes/feature/writeRuneDefsFile/rune-definitions.yaml"
+- "https://raw.githubusercontent.com/sygaldry/sygaldry-runes/master/rune-definitions.yaml"
